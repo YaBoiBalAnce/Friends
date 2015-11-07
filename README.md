@@ -1,6 +1,6 @@
 # Friends
 A simple friends plugin for Pocketmine
-
+NOTE: NEW CHANGES UNTESTED :/
 Commands
 - /friend add [name]
 - /friend remove [name]
