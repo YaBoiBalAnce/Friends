@@ -9,13 +9,31 @@ use pocketmine\utils\TextFormat;
 use pocketmine\Player;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\utils\Config;
+use pocketmine\event\entity\EntityDamageEvent;
+
 class main extends PluginBase implements Listener{
-	private $request = array();
+	public $request = array();
 	public function onEnable(){
 		$this->getLogger()->info("Loaded!");
 		$this->getServer()->getPluginManager()->registerEvents($this ,$this);
 		@mkdir($this->getDataFolder());
 		@mkdir($this->getDataFolder()."players/");
+	}
+	//events
+	public function onDamageByPlayer(EntityDamageEvent $ev){
+		$cause = $ev->getCause();
+		switch ($cause){
+		case EntityDamageEvent::CAUSE_ENTITY_ATTACK:
+		$atkr = $ev->getDamager();
+		$player = $ev->getEntity();
+		if ($atkr instanceof Player and $player instanceof Player){
+			if($this->isFriend($player, $atkr->getName())){
+				$ev->setCancelled();
+				$atkr->sendMessage("Cannot attack friend :(");
+			}
+		}
+		break;
+		}
 	}
 	
 	public function onJoin(PlayerJoinEvent $ev){
@@ -26,7 +44,7 @@ class main extends PluginBase implements Listener{
 			echo "made config for ".$ev->getPlayer()->getName();
 		}
 	}
-	
+	//commands
 	public function onCommand(CommandSender $sender,Command $command, $label,array $args){
 		switch($command->getName()){
 			case "friend":
@@ -41,6 +59,17 @@ class main extends PluginBase implements Listener{
 							}	else {
 								$sender->sendMessage(TextFormat::RED."Player not found");
 							}
+						}
+					break;
+					case "remove":
+						if (isset($args[1])){
+							if ($this->removeFriend($sender, $friend)){
+								$sender->sendMessage("Friend removed");
+							}else{
+								$sender->sendMessage("Friend not found do /friend list \n to list your friends");
+							}
+						}else{
+							$sender->sendMessage("Usage: /friend remove [name]");
 						}
 					break;
 					case "list":
@@ -59,13 +88,13 @@ class main extends PluginBase implements Listener{
 			case "accept":
 				echo var_dump($this->request);
 				if (in_array($sender->getName(), $this->request)){
-					echo "added";
+					//echo "added";
 					foreach ($this->request as $target => $requestp){
 						$target = $this->getServer()->getPlayer($target);
 						$requestp = $this->getServer()->getPlayer($requestp);
 						echo $target->getName().$requestp->getName();
 						if ($requestp->getName() === $sender->getName()){
-							echo "yes";
+							//echo "yes";
 							$this->addFriend($target, $requestp);
 							$this->addFriend($requestp, $target);
 						}
@@ -74,6 +103,8 @@ class main extends PluginBase implements Listener{
 			break;
 		}
 	}
+	
+	//api
 	public function addRequest(Player $target,Player $requestp){
 		$requestp->sendMessage("Sent request to ".$target->getName());
 		$this->request[$requestp->getName()] = $target->getName();
@@ -91,10 +122,22 @@ class main extends PluginBase implements Listener{
 		echo "added friend ";
 	}
 	
-	public function isFriend(Player $player,Player $isfriend){
+	public function removeFriend(Player $player, $friendname){
+		if ($this->isFriend($player, $friend)){
+			$config = new Config($this->getDataFolder()."players/". strtolower($player->getName()).".yml", Config::YAML);
+			$array = $config->get("friends", []);
+			unset($array[$friendname]);
+			$config->set("friends", $array);
+			$config->save();
+			return true;
+		}
+		return false;
+	}
+	
+	public function isFriend(Player $player, $isfriendname){
 		$config = new Config($this->getDataFolder()."players/". strtolower($player->getName()).".yml", Config::YAML);
 		$array = $config->get("friends", []);
-		if (in_array($isfriend->getName(), $array)){
+		if (in_array($isfriendname, $array)){
 			return true;
 		}
 		return false;
