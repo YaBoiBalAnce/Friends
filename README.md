@@ -11,3 +11,4 @@ TODO:
 - add different option for friends
 - add function to check friends DONE
 - add /friend remove command
+- add permission system
