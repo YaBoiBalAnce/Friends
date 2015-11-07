@@ -1,11 +1,13 @@
 # Friends
 A simple friends plugin for Pocketmine
 
-
-DONE:
-- simple friends add and accept system done
+Commands
+- /friend add [name]
+- /friend list 
+- /accept
 
 TODO:
-- add api for other plugins to use friends system
+- add api for other plugins to use friends system DONE
 - add different option for friends
-- add function to check friends
+- add function to check friends DONE
+- add /friend remove command
