@@ -43,6 +43,14 @@ class main extends PluginBase implements Listener{
 							}
 						}
 					break;
+					case "list":
+						$config = new Config($this->getDataFolder()."players/". strtolower($sender->getName()).".yml", Config::YAML);
+						$array = $config->get("friends", []);
+						$sender->sendMessage(TextFormat::GOLD.TextFormat::BOLD."Friends:");
+						foreach ($array as $friendname){
+							$sender->sendMessage(TextFormat::GREEN."* ".$friendname);
+						}
+					break;
 				}
 			}}else{
 		$sender->sendMessage("Must use command in-game");
@@ -69,24 +77,27 @@ class main extends PluginBase implements Listener{
 	public function addRequest(Player $target,Player $requestp){
 		$requestp->sendMessage("Sent request to ".$target->getName());
 		$this->request[$requestp->getName()] = $target->getName();
-		$target->sendMessage($requestp->getName()." has requested you as a friend do /accept to accept or ignore");
+		$target->sendMessage(TextFormat::GREEN.$requestp->getName()." has requested you as a friend do /accept to accept or ignore to ignore");
 		echo var_dump($this->request);
-// 		$task = new $this->removeRequest($target, $requestp);
-// 		$this->getServer()->getScheduler()->scheduleDelayedTask($task, 20*30);
-	}
-	
-	public function removeRequest(Player $target,Player $requestp){
-		$requestp->sendMessage($target->getName()." did not accept your friend request :(");
-		unset($this->request[$requestp]);
+ 		$task = new cancelrequest($this, $target, $requestp);
+ 		$this->getServer()->getScheduler()->scheduleDelayedTask($task, 20*30);
 	}
 	
 	public function addFriend(Player $player,Player $friend){
-		$config = new Config($this->getDataFolder()."players/". strtolower($player->getName()).".yml", Config::YAML);
 		$array = $config->get("friends", []);
 		$array[] = $friend->getName();
 		$config->set("friends", $array);
 		$config->save();
 		echo "added friend ";
+	}
+	
+	public function isFriend(Player $player,Player $isfriend){
+		$config = new Config($this->getDataFolder()."players/". strtolower($player->getName()).".yml", Config::YAML);
+		$array = $config->get("friends", []);
+		if (in_array($isfriend->getName(), $array)){
+			return true;
+		}
+		return false;
 	}
 	
 }
