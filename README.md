@@ -1,4 +1,6 @@
 # Friends
+Status: STABLE AND WORKING! :)
+
 A simple friends plugin for Pocketmine
 
 Commands
