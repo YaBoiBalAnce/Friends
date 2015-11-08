@@ -1,6 +1,6 @@
 # Friends
 A simple friends plugin for Pocketmine
-NOTE: NEW CHANGES UNTESTED :/
+NOTE: player damage friend cancelation untested :/
 
 Commands
 - /friend add [name]
