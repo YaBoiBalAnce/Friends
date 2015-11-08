@@ -106,12 +106,16 @@ class main extends PluginBase implements Listener{
 	
 	//api
 	public function addRequest(Player $target,Player $requestp){
+		if (!$this->isFriend($requestp, $target->getName())){
 		$requestp->sendMessage("Sent request to ".$target->getName());
 		$this->request[$requestp->getName()] = $target->getName();
 		$target->sendMessage(TextFormat::GREEN.$requestp->getName()." has requested you as a friend do /accept to accept or ignore to ignore");
 		echo var_dump($this->request);
  		$task = new cancelrequest($this, $target, $requestp);
  		$this->getServer()->getScheduler()->scheduleDelayedTask($task, 20*30);
+		}else{
+			$requestp->sendMessage("That player is already your friend :)");
+		}
 	}
 	
 	public function addFriend(Player $player,Player $friend){
