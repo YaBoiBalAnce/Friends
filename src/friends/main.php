@@ -52,6 +52,7 @@ class main extends PluginBase implements Listener{
 			if (isset($args[0])){
 				switch ($args[0]){
 					case "add":
+						if ($sender->hasPermission("friend.add")){
 						if (isset($args[1])){
 							$player = $this->getServer()->getPlayer($args[1]);
 							if(!$player == null){
@@ -59,9 +60,12 @@ class main extends PluginBase implements Listener{
 							}	else {
 								$sender->sendMessage(TextFormat::RED."Player not found");
 							}
+						}}{
+							$sender->sendMessage(TextFormat::RED."You do not have permission for that command :(");
 						}
 					break;
 					case "remove":
+						if ($sender->hasPermission("friend.remove")){
 						if (isset($args[1])){
 							if ($this->removeFriend($sender, $args[1])){
 								$sender->sendMessage("Friend removed");
@@ -70,23 +74,30 @@ class main extends PluginBase implements Listener{
 							}
 						}else{
 							$sender->sendMessage("Usage: /friend remove [name]");
+						}}else{
+							$sender->sendMessage(TextFormat::RED."You do not have permission for that command :(");
 						}
 					break;
 					case "list":
+						if ($sender->hasPermission("friend.list")){
 						$config = new Config($this->getDataFolder()."players/". strtolower($sender->getName()).".yml", Config::YAML);
 						$array = $config->get("friends", []);
 						$sender->sendMessage(TextFormat::GOLD.TextFormat::BOLD."Friends:");
 						foreach ($array as $friendname){
 							$sender->sendMessage(TextFormat::GREEN."* ".$friendname);
+						}}else {
+							$sender->sendMessage(TextFormat::RED."You do not have permission for that command :(");
 						}
 					break;
+					
 				}
 			}}else{
 		$sender->sendMessage("Must use command in-game");
 	}
 			break;
 			case "accept":
-				echo var_dump($this->request);
+				if ($sender->hasPermission("friend.accept")){
+				//echo var_dump($this->request);
 				if (in_array($sender->getName(), $this->request)){
 					//echo "added";
 					foreach ($this->request as $target => $requestp){
@@ -99,6 +110,8 @@ class main extends PluginBase implements Listener{
 							$this->addFriend($requestp, $target);
 						}
 					}
+				}}else{
+					$sender->sendMessage(TextFormat::RED."You do not have permission for that command :(");
 				}
 			break;
 		}
