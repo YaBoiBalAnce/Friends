@@ -63,7 +63,7 @@ class main extends PluginBase implements Listener{
 					break;
 					case "remove":
 						if (isset($args[1])){
-							if ($this->removeFriend($sender, $friend)){
+							if ($this->removeFriend($sender, $args[1])){
 								$sender->sendMessage("Friend removed");
 							}else{
 								$sender->sendMessage("Friend not found do /friend list \n to list your friends");
@@ -115,18 +115,20 @@ class main extends PluginBase implements Listener{
 	}
 	
 	public function addFriend(Player $player,Player $friend){
+		$config = new Config($this->getDataFolder()."players/". strtolower($player->getName()).".yml", Config::YAML);
 		$array = $config->get("friends", []);
 		$array[] = $friend->getName();
 		$config->set("friends", $array);
 		$config->save();
-		echo "added friend ";
+		$player->sendMessage("Added ".$friend->getName()." as a friend!");
 	}
 	
 	public function removeFriend(Player $player, $friendname){
-		if ($this->isFriend($player, $friend)){
+		if ($this->isFriend($player, $friendname)){
 			$config = new Config($this->getDataFolder()."players/". strtolower($player->getName()).".yml", Config::YAML);
 			$array = $config->get("friends", []);
-			unset($array[$friendname]);
+			$id = array_search($friendname, $array);
+			unset($array[$id]);
 			$config->set("friends", $array);
 			$config->save();
 			return true;
