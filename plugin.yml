@@ -1,7 +1,7 @@
 name: Friends
 description: Adds a friends system to Pocketmine!
 author: BalAnce
-version: 0.1
+version: 0.3
 main: friends\main
 api: 1.12.0
 commands:

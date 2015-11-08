@@ -60,7 +60,9 @@ class main extends PluginBase implements Listener{
 							}	else {
 								$sender->sendMessage(TextFormat::RED."Player not found");
 							}
-						}}{
+						}
+						return ;
+						}{
 							$sender->sendMessage(TextFormat::RED."You do not have permission for that command :(");
 						}
 					break;
@@ -74,7 +76,9 @@ class main extends PluginBase implements Listener{
 							}
 						}else{
 							$sender->sendMessage("Usage: /friend remove [name]");
-						}}else{
+						}
+						return ;
+						}else{
 							$sender->sendMessage(TextFormat::RED."You do not have permission for that command :(");
 						}
 					break;
@@ -85,7 +89,9 @@ class main extends PluginBase implements Listener{
 						$sender->sendMessage(TextFormat::GOLD.TextFormat::BOLD."Friends:");
 						foreach ($array as $friendname){
 							$sender->sendMessage(TextFormat::GREEN."* ".$friendname);
-						}}else {
+						}
+						return ;
+						}else {
 							$sender->sendMessage(TextFormat::RED."You do not have permission for that command :(");
 						}
 					break;
@@ -109,8 +115,14 @@ class main extends PluginBase implements Listener{
 							$this->addFriend($target, $requestp);
 							$this->addFriend($requestp, $target);
 						}
+						
 					}
-				}}else{
+					return ;
+				}else{
+					$sender->sendMessage("No pending friend requests :(");
+				}
+				return ;
+				}else{
 					$sender->sendMessage(TextFormat::RED."You do not have permission for that command :(");
 				}
 			break;
@@ -125,19 +137,31 @@ class main extends PluginBase implements Listener{
 		$target->sendMessage(TextFormat::GREEN.$requestp->getName()." has requested you as a friend do /accept to accept or ignore to ignore");
 		echo var_dump($this->request);
  		$task = new cancelrequest($this, $target, $requestp);
- 		$this->getServer()->getScheduler()->scheduleDelayedTask($task, 20*30);
+ 		$this->getServer()->getScheduler()->scheduleDelayedTask($task, 20*10);
+ 		return ;
 		}else{
 			$requestp->sendMessage("That player is already your friend :)");
 		}
 	}
 	
+	public function removeRequest(Player $target,Player $requestp, $reason){
+		if (in_array($target->getName(), $this->request)){
+			if ($reason == 0){
+				$requestp->sendMessage(TextFormat::RED."Player ".$target->getName()." did not accept your friend request... :(");
+			}
+			unset($this->request[$requestp->getName()]);
+		}
+	}
+	
 	public function addFriend(Player $player,Player $friend){
+		$player->sendMessage("added friend".$friend->getName());
+		$friend->sendMessage("added friend ".$player->getName());
 		$config = new Config($this->getDataFolder()."players/". strtolower($player->getName()).".yml", Config::YAML);
 		$array = $config->get("friends", []);
 		$array[] = $friend->getName();
 		$config->set("friends", $array);
 		$config->save();
-		$player->sendMessage("Added ".$friend->getName()." as a friend!");
+		$this->removeRequest($friend, $player, 1);
 	}
 	
 	public function removeFriend(Player $player, $friendname){

@@ -16,14 +16,7 @@ class cancelrequest extends PluginTask{
 	}
 	
 	public function onRun($currentTick){
-         if (in_array($this->target, $this->getOwner()->request)){
-         	foreach ($this->getOwner()->request as $requestp => $target){
-         		if ($requestp === $this->requestp){
-         			unset($this->getOwner()->request[$requestp]);
-         			$requestp = $this->getOwner()->getServer()->getPlayer($requestp);
-         			$requestp->sendMessage(TextFormat::RED."Player ".$target." did not accept your friend request... :(");
-         		}
-         	}
-         }
+		echo "ran cancelrequest!";
+         $this->getOwner()->removeRequest($this->target,$this->requestp, 0);
 	}
 }
